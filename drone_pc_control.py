@@ -78,16 +78,8 @@ class VideoCamera(object):
     def __init__(self, socket, algorithm, target_color, stream_only, is_test,
                  speed):
         self.video = cv2.VideoCapture('udp://127.0.0.1:11111')
-"""
-・カメラ起動しない
-・プログラムソースが足りないかもしれない。
-・flip制御が上手くいかない（動きに安定感がない）　…　細かい数値計算をして制御すればいけるかもしれない。
-・通信は出来ているが、一度に多くコマンドを送ることが出来ない。
-・他の言語と比べて足りない部分を調査していく。
-・ポート番号が違うかもしれない。
-"""
 
-# The key combination to check
+# The key combination to check(ホットキー設定)
 COMBINATIONS = [
     {keyboard.KeyCode(char='1')},
     {keyboard.Key.shift, keyboard.KeyCode(char='1')}
@@ -144,11 +136,8 @@ COMBINATIONS13 = [
     {keyboard.KeyCode(char='h')},
     {keyboard.Key.shift, keyboard.KeyCode(char='H')}
 ]
-"""COMBINATIONS14 = [
-    {keyboard.KeyCode(char='l')},
-    {keyboard.Key.shift, keyboard.KeyCode(char='L')}
-]"""
-# The currently active modifiers
+
+# The currently active modifiers（コマンド送信を設定）
 
 current = set()
 
@@ -247,13 +236,8 @@ def execute13():
             print('down')
         except:
             pass
-"""def execute14():
-        try:
-            time.process_time()
-            socket.sendto('flip l'.encode('utf-8'),tello_address)
-            print('flip left')
-        except:
-            pass""" 
+
+#キーを押した時のコマンド呼び出す
 def on_press(key):
     if any([key in COMBO for COMBO in COMBINATIONS]):
         current.add(key)
@@ -310,11 +294,9 @@ def on_press(key):
     elif any([key in COMBO for COMBO in COMBINATIONS13]):
         current.add(key)
         if any(all(k in current for k in COMBO) for COMBO in COMBINATIONS13):
-            execute13()
-    """elif any([key in COMBO for COMBO in COMBINATIONS14]):
-        current.add(key)
-        if any(all(k in current for k in COMBO) for COMBO in COMBINATIONS14):
-            execute14()"""
+        execute13()
+     
+#呼び出したコマンドをドローンに送信する     
 def on_release(key):
     if any([key in COMBO for COMBO in COMBINATIONS]):
         current.remove(key)
@@ -344,7 +326,6 @@ def on_release(key):
         current.remove(key)
     elif any([key in COMBO for COMBO in COMBINATIONS13]):
         current.remove(key)
-    """elif any([key in COMBO for COMBO in COMBINATIONS14]):
-        current.remove(key)"""
+    
 with keyboard.Listener(on_press=on_press, on_release=on_release) as listener:
     listener.join()
